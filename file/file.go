@@ -6,8 +6,8 @@ import (
 	"time"
 )
 
-func ViewFileContents() {
-	f, err := os.Open("test.txt")
+func ViewFileContents(n string) {
+	f, err := os.Open(n)
 	if err != nil {
 		fmt.Printf("Error: %v occurred at: %v", err, time.Now())
 	}
