@@ -11,6 +11,6 @@ func ViewFileContents(n string) {
 	if err != nil {
 		fmt.Printf("Error: %v occurred at: %v", err, time.Now())
 	}
-	fmt.Println(f)
+	fmt.Printf("Value: %v Type: %T\n", f, f)
 
 }
