@@ -9,6 +9,10 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
 )
 
+type Ec2Client interface {
+	DescribeInstances(ctx context.Context, params *ec2.DescribeInstancesInput)
+}
+
 type Client struct {
 	Config *aws.Config
 }
