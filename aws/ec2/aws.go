@@ -17,12 +17,12 @@ type Client struct {
 	Config *aws.Config
 }
 
-func NewConfig(awsProfile, region string) Client {
+func NewConfig(awsProfile, region string) *Client {
 	cfg, _ := config.LoadDefaultConfig(context.TODO(),
 		config.WithSharedConfigProfile(awsProfile),
 		config.WithRegion(region),
 	)
-	return Client{
+	return &Client{
 		Config: &cfg,
 	}
 }
