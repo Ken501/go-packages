@@ -1,0 +1,51 @@
+name: AMI Version Updater
+
+on:
+  repository_dispatch:
+    types:
+      - init-ami-update
+  workflow_dispatch:
+    inputs:
+      ami_version:
+        description: 'New AMI version (e.g. v20250401)'
+        required: true
+      note_url:
+        description: 'URL with version details (optional)'
+        required: false
+      is_prerelease:
+        description: 'Is this a pre-release version?'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  ami-update:
+    name: Init AMI Update
+    runs-on: [ubuntu-latest]
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set version variables
+        id: vars
+        run: |
+          # Set AMI version from either workflow_dispatch inputs or repository_dispatch payload
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "ami_version=${{ github.event.inputs.ami_version }}" >> $GITHUB_OUTPUT
+            echo "note_url=${{ github.event.inputs.note_url }}" >> $GITHUB_OUTPUT
+            echo "is_prerelease=${{ github.event.inputs.is_prerelease }}" >> $GITHUB_OUTPUT
+          else
+            echo "ami_version=${{ github.event.client_payload.ami_version }}" >> $GITHUB_OUTPUT
+            echo "note_url=${{ github.event.client_payload.note_url }}" >> $GITHUB_OUTPUT
+            echo "is_prerelease=${{ github.event.client_payload.is_prerelease }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Test payload variables
+        run: |
+          echo "AMI Version: ${{ steps.vars.outputs.ami_version }}"
+          echo "Note URL: ${{ steps.vars.outputs.note_url }}"
+          echo "Is Pre-release: ${{ steps.vars.outputs.is_prerelease }}"
