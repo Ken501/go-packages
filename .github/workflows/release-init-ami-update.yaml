@@ -1,0 +1,48 @@
+name: Release Init AMI Update
+on:
+  push:
+    branches:
+      - 'main'
+    paths:
+      - 'scripts/ami-update/init-versions.json'
+  workflow_dispatch:
+
+jobs: 
+  sbox:
+    if: always() && github.ref == 'refs/heads/main'
+    environment: sbox #This will allow protection rules to be applied
+    runs-on: [self-hosted, jamf-ubuntu-latest] # Jamf GitHub runners
+    steps:
+      - name: Update Sbox Init Nodegroup
+        run: |
+          echo "Chaos API update sbox init nodegroup"
+
+  dev:
+    if: success() && github.ref == 'refs/heads/main'
+    needs: sbox
+    environment: dev #This will allow protection rules to be applied
+    runs-on: [self-hosted, jamf-ubuntu-latest] # Jamf GitHub runners
+    steps:
+      - name: Update Dev Init Nodegroup
+        run: |
+          echo "Chaos API update dev init nodegroup"
+
+  stage:
+    if: success() && github.ref == 'refs/heads/main'
+    needs: [sbox, dev]
+    environment: stage #This will allow protection rules to be applied
+    runs-on: [self-hosted, jamf-ubuntu-latest] # Jamf GitHub runners
+    steps:
+      - name: Update Stage Init Nodegroup
+        run: |
+          echo "Chaos API update stage init nodegroup"
+
+  prod:
+    if: success() && github.ref == 'refs/heads/main'
+    needs: [sbox, dev, stage]
+    environment: prod #This will allow protection rules to be applied
+    runs-on: [self-hosted, jamf-ubuntu-latest] # Jamf GitHub runners
+    steps:
+      - name: Update Prod Init Nodegroup
+        run: |
+          echo "Chaos API update prod init nodegroup"
